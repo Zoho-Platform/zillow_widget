@@ -1,0 +1,303 @@
+<html>
+<head>
+<title>Zillow</title>
+<link href="https://www.zoho.com/lp/fonts/proxima-nova/stylesheet.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="../css/flexslider.css">
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<script type="text/javascript" src="../lib/jquery-1.11.1.min.js"></script> 
+  <script type="text/javascript" src="../lib/ZohoEmbededAppSDK.min.js"></script>
+  <script src="../lib/xml2json.min.js"></script>
+<script type="text/javascript" src="../lib/handlebars-v4.0.10.js"></script>
+<script defer src="../js/jquery.flexslider.js"></script>
+<script type="text/javascript" src="../js/relatedListSearch.js"></script>
+<style type="text/css">
+  /********************        Tab style start here **************/
+  .tab-body
+{
+  display:none;
+}
+.tab-link li
+{
+  float:left;
+}
+ul li{list-style: none;}
+.tab-link a
+{
+  padding:9px 20px;
+  text-decoration:none;
+  color:#444;
+  float:left;
+  border-top:2px solid #fff;
+  border:1px solid #fff;
+  transition: .10s linear 0s;
+}
+.tab-link a.activeTab
+{
+  color:#2C7BD0;
+  border-bottom: solid 1px #fff;
+  border-left: solid 1px #e4e4e4;
+  border-right: solid 1px #e4e4e4;
+  border-top: solid 2px #2c7bd0;
+}
+.tab-link
+{
+  /*border-top:solid 1px #e4e4e4;*/
+  width:100%;
+  padding:0;
+  box-sizing: border-box;
+}
+.activeTab
+{
+  /*border-bottom: solid 6px #ddd;*/
+}
+/********************   laoding    **************/
+#Loading {
+    background-color: #f8e3c8;
+    border: 1px solid #fac9a1;
+    border-bottom-left-radius:3px;
+    border-bottom-right-radius:3px;
+    left: 45%;
+    padding: 3px 5px;
+    position: fixed;
+    text-align: center;
+    top: 0;
+    width: 80px;
+    z-index: 55;
+}
+
+div#Loading span {
+    font-size: 15px;
+    line-height: 10px;
+}
+.layoutLoad {
+    clear: both;
+    float: left;
+    width: 31px;
+    position: absolute;
+    top: 45px;
+    left: 50%;
+    margin-left: -15px;
+}
+.layoutLoad span {
+    width: 6px;
+    height: 16px;
+    background: #a7a7a7;
+    display: inline-block;
+    margin-right: 2px;
+    border-radius: 3px;
+}
+.one {
+    opacity: 1;
+    -webkit-animation: dot 1.3s infinite;
+    -webkit-animation-delay: 0.0s;
+    animation: dot 1.3s infinite;
+    animation-delay: 0.0s;
+}
+
+.two2 {
+    opacity: 1;
+    -webkit-animation: dot 1.3s infinite;
+    -webkit-animation-delay: 0.2s;
+    animation: dot 1.3s infinite;
+    animation-delay: 0.2s;
+}
+
+.three {
+    opacity: 1;
+    -webkit-animation: dot 1.3s infinite;
+    -webkit-animation-delay: 0.3s;
+    animation: dot 1.3s infinite;
+    animation-delay: 0.3s;
+}
+
+@-webkit-keyframes dot {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes dot {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+</style>
+
+</head>
+<body>
+<div id="loading">Loading<span class="one">.</span><span class="two2">.</span><span class="three">.</span></div>
+<center><div id="errorDiv" class="subnav pT40" style="color:red; "></div></center>
+<script type="text/javascript">
+
+function showtab(id, obj) {
+  $(".activeTab").removeClass();
+  $('.tab-body').hide();  
+  $('#' + id).show();
+  $(obj).addClass("activeTab");
+  }
+ </script>
+
+<div id="propertyContentDiv"></div>
+
+<script type="text/x-handlebars-template" id="propertyScript">
+
+<div class="tab-link">
+<ul>
+  <li>
+      <a href="javascript:;" onClick="showtab('tab1',this)" class="activeTab">Property Details</a>
+    </li>
+    <li>
+      <a href="javascript:;" id="balance" onClick="showtab('tab2',this)">Zestimate</a>
+    </li>
+     <li>
+      <a href="javascript:;" onClick="showtab('tab3',this)">Comparable Homes</a>
+    </li>
+    <li>
+      <a href="javascript:;" onClick="showtab('tab4',this)">Map</a>
+    </li>
+    <li style="float: right;">
+     <a href="https://www.zillow.com/" style="color:#2C7BD0; cursor: pointer;" target="_blank">Zillow Search</a>
+    </li>
+     <li style="float: none;border-bottom: solid 1px #e4e4e4; padding-top:20px;">
+      &nbsp;  
+    </li>
+</ul>
+</div>
+
+<div class="BG">
+
+<div id="tab1" class="tab-body" style="display:block;">
+
+	<div class="propertybg clearfix">
+
+
+	<div class="Prptyleft fL">
+	
+	  <p class="subnav clearfix">Address</p>
+	  
+	  <p class="ProText mT20"><b><div style="line-height: .8">{{address.street}}</div><br/><div style="line-height: .8;">{{address.city}} {{address.state}} {{address.zipcode}}</div style=".8"><br/></b><div style="line-height:.8;">{{editedFacts.bedrooms}} beds, {{editedFacts.bathrooms}} baths, {{editedFacts.finishedSqFt}} sqft</div></p>
+	<p class="subnav pT35">Facts</p>
+	<ul class="factsBG clearfix mT10">
+  {{#each info}}
+	  <li class="factText"><label class="fasubText">{{label}}</label> {{value}}</li>
+    {{/each}}
+	</ul>
+	{{#if rooms}}
+	<p class="subnav pT35">Rooms</p>
+
+	<ul class="factsbg clearfix" id="rooms">
+	{{#each rooms}}
+	<li class="factText">{{this}}</li>
+	{{/each}}
+	</ul>
+	{{/if}}
+	</div>
+	<div class="prptyright fL">
+	<p class="subnav">Pictures</p>
+	<div class="imagebg">
+	 <span class="previewarrow"></span>
+	  <div class="flexslider carousel">
+	    <ul class="slides">
+	     {{#if images}}{{#each images.image.url}}
+	    <li><img class="image" src="{{this}}"></li>
+	    {{/each}}
+      {{else}}
+      <center><li>No Image Available</li></center>
+      {{/if}}
+
+	  </ul>
+	  </div>
+	  <span class="nextarrow"></span>
+	  </div>
+	</div>
+  
+	</div>
+</div>
+
+<div id="tab2" class="tab-body">
+	<div class="estimatebg clearfix" id="zesDetails">
+	<div class="estimateleft fL">
+	  <p class="subnav">Zestimate Details</p>
+	  <h4 class="zestiHead">Zestimate</h4>
+	  <span class="vlue">${{zesAmount}}</span>
+	<span class="dayvlue"><i class="secvlue">${{zesAmountChange}}</i>Last {{valChangeDuration}} days</span>
+	<div class="progressbar clearfix" style="padding-right: 25px;"><i class="dollar fL barL">${{zesAmountChangeLow}}</i><div class="range" style="left:{{zesPercent}}%"></div><i class="dollar fR barR">${{zesAmountChangeHigh}}</i></div>
+	<p class="rang">Zestimate Range</p>
+
+<div class="mT40">
+	  <h4 class="zestiHead">Rent Zestimate</h4>
+	<span class="vlue">${{rentzesAmount}}</span>
+	<span class="dayvlue"><i class="secvlue">${{rentzesAmountChange}}</i>Last {{rentValChangeDuration}} days</span>
+	<div class="progressbar clearfix" style="padding-right: 25px;"><span class="dollar fL barL">${{rentzesAmountChangeLow}}</span><div class="range" style="left:{{rentzesPercent}}%"></div><span class="dollar fR barR">${{rentzesAmountChangeHigh}}</span></div>
+	<p class="rang">Zestimate Range</p>
+	</div>
+
+	</div>
+	<div class="estimateright fL">
+	<i class="subnav" style="width:100%;">Historical Zestimate</i>
+	<span class="mT20"><img style=" margin-top:30px;" src="{{chart}}">
+	</span> 
+	</div>
+	</div>
+</div>
+
+<div id="tab3" class="tab-body">
+	<div class="comparbg clearfix">
+	  <p class="subnav">Comparable Homes</p>
+	<div style="margin-top: 10px;"></div>
+	<table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top:20px;">
+	  <tbody>
+	    <tr>
+	    <th class="homeHD w180 brTop">Street</th><th class="homeHD w180 brTop">Home Value</th><th class="homeHD w230 brTop">Home Info</th><th class="homeHD w230 brTop">Value Range</th><th class="homeHD w180 brTop">Sold Date</th><th class="homeHD  w180 brTop">Sold Price</th><th class="homeHD w180 brTop">Lot Size(sq.ft)</th>
+	    </tr>
+	    {{#unless comparables}}
+	  <tr>
+	    <td class="homeHD w180 textCL">No data Available</td>
+	  </tr>
+	  {{/unless}}
+	  {{#if comparables}}{{#each comparables}}
+	    <tr>
+	      <td class="homeHD w180 textCL"><a onclick="generateHomeDetails(this.innerHTML,this.parentNode.parentNode.rowIndex)" style="color:#2C7BD0; cursor: pointer;" target="_blank">{{address.street}}</a></td>
+	      <td class="homeHD w180 ">{{#if zestimate.amount.__text}}${{zestimate.amount.__text}}{{/if}}</td>
+	      <td class="homeHD w230">{{bedrooms}} beds, {{bathrooms}} baths, {{finishedSqFt}}sqft</td>
+	      <td class="homeHD w230">{{#if zestimate.valuationRange.high.__text}}{{#if zestimate.valuationRange.low.__text}}${{zestimate.valuationRange.high.__text}} - ${{zestimate.valuationRange.low.__text}}{{/if}}{{/if}}</td>
+	      <td class="homeHD w180">{{#if lastSoldDate}}{{lastSoldDate}}{{/if}}</td>
+	      <td class="homeHD w180">{{#if lastSoldPrice.__text}}${{lastSoldPrice.__text}}{{/if}}</td>
+	      <td class="homeHD w180">{{lotSizeSqFt}}</td>
+	    </tr>
+	  {{/each}}{{/if}}
+	  </tbody>
+	</table>
+	</div>
+</div>
+<div id="tab4" class="tab-body" style="display: none;">
+		<div class="mapBG clearfix" style="" id="map">
+  <p class="subnav" id="propMap">Map</p>
+  <div  class="map mT20"> <div id="googleMap"></div></div>
+ 	<div style="margin-top: 10px;"> <a onclick="viewBiggerMap()" style="cursor: pointer;color: blue;">See Map Bigger</a></div>
+ 	 </div>
+</div>
+</div>
+</script>
+
+
+
+
+
+</div>
+
+</body>
+</html>
